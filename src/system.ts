@@ -11,6 +11,8 @@ import { EarlOptions, EarlReport, generateEARLReport } from '@qualweb/earl-repor
 import clone from 'lodash.clone';
 import css from 'css';
 
+import Logger from './lib/managers/logger.manager';
+
 import {
   DEFAULT_DESKTOP_USER_AGENT,
   DEFAULT_MOBILE_USER_AGENT,
@@ -196,6 +198,7 @@ class System {
       } catch(err) {
         if (!this.force) {
           console.error(err);
+          Logger.logError('err');
         }
       }
     }
