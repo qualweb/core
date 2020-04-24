@@ -45,7 +45,7 @@
   "dependencies": {
     "@qualweb/act-rules": "^0.3.33",
     "@qualweb/best-practices": "^0.3.2",
-    "@qualweb/crawler": "^0.1.1",
+    "@qualweb/crawler": "^0.2.2",
     "@qualweb/css-techniques": "^0.3.5",
     "@qualweb/earl-reporter": "^0.2.4",
     "@qualweb/html-techniques": "^0.3.3",
@@ -58,7 +58,7 @@
     "puppeteer": "^3.0.1"
   },
   "devDependencies": {
-    "@qualweb/types": "^0.3.26",
+    "@qualweb/types": "^0.3.27",
     "@types/node": "^13.13.2",
     "@types/puppeteer": "^2.0.1",
     "chai": "^4.2.0",

@@ -69,7 +69,7 @@ describe('Testing new architecture', function() {
   });
 });
 
-describe.only('Testing file with R37', function() {
+describe('Testing file with R37', function() {
   it('Should not have a heap memory', async function() {
     this.timeout(1000 * 1000);
 
@@ -88,11 +88,13 @@ describe.only('Testing file with R37', function() {
   });
 });
 
-describe('Testing crawler', function() {
+describe.only('Testing crawler', function() {
   it('Should execute', async function() {
     this.timeout(1000 * 1000);
-    const reports = await core.evaluate({ crawl: 'https://ciencias.ulisboa.pt', maxParallelEvaluations: 5, execute: { act: true } });
-    console.log(reports.length);
+    await core.start();
+    const reports = await core.evaluate({ crawl: 'https://ciencias.ulisboa.pt', maxParallelEvaluations: 5, execute: { act: true }, 'act-rules': { rules: ['QW-ACT-R1'] } });
+    await core.close();
+    console.log(reports);
   })
 });
 
