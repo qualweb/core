@@ -67,8 +67,9 @@ class System {
     } 
     if (options.crawl) {
       this.urls = this.urls.concat(await crawlDomain(options.crawl));
-    } 
-    
+      this.evalOrSave(this.urls.join('\n'));
+    }
+
     if (this.urls.length === 0) {
       throw new Error('Invalid input method');
     }
@@ -357,6 +358,47 @@ class System {
         
       }
     }
+  }
+
+  private evalOrSave(content: string): void {
+    const readlineSync = require('readline-sync');
+    // Wait for user's response.
+    let answer = readlineSync.question('(e)valuate, (s)ave or (b)oth? ');
+    if(answer == 's'){
+      const path = readlineSync.questionPath('Save to: ', {
+        isFile: true,
+        exists: null,
+        create: true
+      });
+      this.save(path, content).then(() => {
+        console.log("File saved to " + path);
+        process.exit(0);
+      })
+    }else if(answer == 'b'){
+      const path = readlineSync.questionPath('Save to: ', {
+        isFile: true,
+        exists: null,
+        create: true
+      });
+      this.save(path, content).then(() => {
+        console.log("File saved to " + path);
+      })
+    }else if(answer == 'e'){
+      //do nothing
+    }else{
+      console.log(`Wrong input please try again...`);
+      this.evalOrSave(content);
+    }
+  }
+
+  private async save(path: string, content: string): Promise<void>{
+    return new Promise<void>((resolve) => {
+      const fs = require('fs');
+      fs.writeFile(path, content, function (err) {
+        if (err) return console.log(err);
+        resolve();
+      });
+    });
   }
 }
 

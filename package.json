@@ -55,7 +55,8 @@
     "htmlparser2": "^4.1.0",
     "lodash.clone": "^4.5.0",
     "lodash.clonedeep": "^4.5.0",
-    "puppeteer": "^3.0.1"
+    "puppeteer": "^3.0.1",
+    "readline-sync": "^1.4.10"
   },
   "devDependencies": {
     "@qualweb/types": "^0.3.26",
