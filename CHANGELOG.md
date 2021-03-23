@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.4.71] - 23/03/2021
+
+### Added
+
+- code documentation
+
+### Updated
+
+- dependencies (except puppeteer)
+
 ## [0.4.70] - 23/03/2021
 
 ### Updated
