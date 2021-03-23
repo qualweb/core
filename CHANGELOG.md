@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.4.70] - 23/03/2021
+
+### Updated
+
+- @qualweb/types to 0.4.65
+
 ## [0.4.69] - 22/03/2021
 
 ### Updated
