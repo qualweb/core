@@ -9,12 +9,12 @@ describe('Core', function () {
 
     await qualweb.start({ headless: true, args: ['--ignore-certificate-errors'] });
 
-    const evaluations = await qualweb.evaluate({ url: 'http://www.acsa.org.pt/', execute: { act: true } });
+    const evaluations = await qualweb.evaluate({ url: 'https://eportugal.gov.pt/', execute: { act: true, wcag: true, bp: true } });
     console.log(evaluations)
     const earlReports = generateEARLReport(evaluations);
 
     await qualweb.stop();
 
-    expect(earlReports['http://www.acsa.org.pt/']['@graph'].length).to.be.equal(1);
+    expect(earlReports['https://eportugal.gov.pt/']['@graph'].length).to.be.equal(1);
   });
 });
