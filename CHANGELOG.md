@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.8.0-alpha] - 23/02/2022
+
+### Updated
+
+- alpha version
+- dependencies
+
 ## [0.7.19] - 21/02/2022
 
 ### Updated
