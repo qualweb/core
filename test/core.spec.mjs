@@ -11,13 +11,12 @@ describe('Core', function () {
 
     const evaluations = await qualweb.evaluate({
       url: 'https://ciencias.ulisboa.pt/',
-      log: { console: true },
-      viewport: { mobile: true, landscape: false },
-      execute: { act: true, wcag: false },
-      'act-rules': { levels: ['A', 'AA'] }
+      execute: {
+        bp: true
+      }
     });
 
-    console.log(evaluations);
+    console.log(evaluations['https://ciencias.ulisboa.pt/'].metadata);
 
     const earlReports = generateEARLReport(evaluations);
 
