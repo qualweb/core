@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.7.43] - 28/09/2023
+
+### Updated
+
+- add qualstate 
+
 ## [0.7.43] - 27/09/2023
 
 ### Updated

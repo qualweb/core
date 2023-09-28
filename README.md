@@ -87,6 +87,83 @@ The available options fot the **evaluate()** function are:
   "urls": ["https://act-rules.github.io/pages/about/", "https://act-rules.github.io/rules/"], // Array of urls
   "file": "/path/to/file/with/urls", // urls must be separated by a newline (\n)
   "crawl": "https://act-rules.github.io", // Domain to crawl and obtain the urls
+  "qualstate": {
+    "waitTime": 2000, // time to wait between actions
+    "maxStates": 2, // number of maximum states to be found
+    "numberOfProcess": 3, // Number of concurrent processes. Default value = 1
+    "log": {
+      "file": true, // Logs errors to a file. Default value = false
+      "console": false // Logs errors to the console. Default value = false
+    },
+    "viewport": {
+      "mobile": false, // default value = false
+      "landscape": true, // default value = viewPort.width > viewPort.height
+      "resolution": {
+        "width": 1920, // default value for desktop = 1366, default value for mobile = 1080
+        "height": 1080 // default value for desktop = 768, default value for mobile = 1920
+      }
+    },
+    "ignore": {
+      "ids_compare": ["pErrorMessage"], // array of IDs or any identifying attribute of element that should be ignore when comparing states.
+      "ids_events": ["btnReq", "hoverTest", "btnId", "aHref", "idTd1", "idTd2"] // array of IDs of element that have events and should be ignore.
+    },
+    "interaction": {
+      "inputs": [ // array of inputs, that will be executed on the page if the inputs exist
+        {
+          "value": { // one or more key:value, where key is the ID of input and value the input value
+            "onChangeInput": "inputOnChange"
+          },
+          "info": {
+            "wait": 2000 // time to wait after executing the inputs
+          }
+        }
+      ],
+      "forms": [ // array of forms, that will be executed on the page if the forms exist
+        {
+          "input": [ // array inputs to be place on the form
+            { // one or more key:value, where key is the ID of input and value the input value
+              "fname": "filipe"
+            }
+          ],
+          "action": { // action that submits the form
+            "id": "btnSubmit", // ID of the element
+            "event": "click" // type of event to be executed
+          },
+          "info": {
+            "formId": "idForm" // ID of the form
+          },
+        }
+      ],
+      "directions": [ // array of directions, that will be executed at the beginning of the crawl process
+        {
+          "actions": [ // array of actions to be executed for each directions
+            {
+              "values": { // one or more key:value, where key is the ID of input and value the input value
+                "fname": "filipe"
+              },
+              "action": { // action that should be trigger
+                "id": "btnSubmit", // ID of the element
+                "eventType": "click" // type of event to be executed
+              }
+            },
+            {
+              "values": {
+                "newFName": "filipe"
+              },
+              "action": {
+                "id": "btnSubmitNewForm",
+                "eventType": "click"
+              }
+            }
+          ],
+          "info": {
+            "crawl": "stop", // flag to know if the crawl process shoulf continue after the directions process. Value = "stop" || "continue"
+            "save": true // save the states during the directions process
+          }
+        }
+      ]
+    }
+  },
   "html": "<html-code>", // Full webpage html, or just small snippets
   "log": {
     "file": true, // Logs errors to a file. Default value = false
@@ -366,6 +443,218 @@ In this section it's explained the evaluation report in detail. For a detailed v
       }
     }
   }
+```
+
+The report detail chenges if the qualstate option is being use.
+```jsonc
+{
+  "type": "evaluation",
+  "system": {
+    "name": "QualWeb",
+    "description": "QualWeb is an automatic accessibility evaluator for webpages.",
+    "version": "QualWeb version",
+    "homepage": "http://www.qualweb.di.fc.ul.pt/",
+    "date": "date of the evaluation",
+    "hash": "unique hash",
+    "url": {
+      "inputUrl": "inserted url",
+      "protocol": "protocol of the url",
+      "domainName": "domain name of the url",
+      "domain": "domain of the url",
+      "uri": "uri of the url",
+      "completeUrl": "complete url after all redirects"
+    },
+    "page": {
+      "viewport": {
+        "mobile": "was evaluated on a mobile context or not",
+        "landscape": "was evaluated on a landscape context or not",
+        "userAgent": "user agent used",
+        "resolution": {
+          "width": "window's width used",
+          "height": "window's height used",
+        }
+      }
+    }
+  },
+  "states": [
+    {
+      "dom": {
+        "html": "html code as a string",
+        "title": "Title of the webpage",
+        "elementCount": "Element count of the webpage"
+      },
+      "metadata": {
+        "passed": "number of passed rules/techniques/best practices",
+        "warning": "number of warning rules/techniques/best practices",
+        "failed": "number of failed rules/techniques/best practices",
+        "inapplicable": "number of inapplicable rules/techniques/best practices",
+      },
+      "modules": {
+        "act-rules": {
+          "type": "act-rules",
+          "metadata": {
+            "passed": "number of passed rules",
+            "warning": "number of warning rules",
+            "failed": "number of failed rules",
+            "inapplicable": "number of inapplicable rules",
+          },
+          "assertions": {
+            "QW_ACT_R1": {
+              "name": "Name of the rule",
+              "code": "QualWeb rule id",
+              "mapping": "ACT rule id mapping",
+              "description": "Description of the rule",
+              "metadata": {
+                "target": "Any target, can be one element, multiple elements, attributes, a relation between elements",
+                "success-criteria?": [
+                  {
+                    "name": "Name of the success criteria",
+                    "level": "Level of conformance of the success criteria",
+                    "principle": "Principle of the success criteria",
+                    "url": "Url of the success criteria"
+                  }
+                ],
+                "related?": [], // related WCAG 2.1 techniques
+                "url?": "Url of the rule",
+                "passed": "Number of passed results",
+                "warning": "Number of warning results",
+                "failed": "Number ff failed results",
+                "type?": [], // usually "ACTRule" or "TestCase"
+                "a11yReq?": [], // WCAG 2.1 relation - something like "WCAG21:language"
+                "outcome": "Outcome of the rule",
+                "description": "Description of the outcome";
+              },
+              "results": [
+                {
+                  "verdict": "Outcome of the test",
+                  "description": "Description of the test",
+                  "resultCode": "Test identifier",
+                  "pointer?": "Element pointer in CSS notation",
+                  "htmlCode?": "Element html code",
+                  "attributes?": "Attributes of the element",
+                  "accessibleName?": "Accessible name of the test target"
+                },
+                { ... }
+              ]
+            },
+            "...": { ... }
+          }
+        },
+        "wcag-techniques": {
+          "type": "wcag-techniques",
+          "metadata": {
+            "passed": "number of passed techniques",
+            "warning": "number of warning techniques",
+            "failed": "number of failed techniques",
+            "inapplicable": "number of inapplicable techniques",
+          },
+          "assertions": {
+            "QW_WCAG_T1": {
+              "name": "Name of the technique",
+              "code": "QualWeb technique id",
+              "mapping": "WCAG techniques code mapping",
+              "description": "Description of the technique",
+              "metadata": {
+                "target": "Any target, can be one element, multiple elements, attributes, a relation between elements",
+                "success-criteria?": [
+                  {
+                    "name": "Name of the success criteria",
+                    "level": "Level of conformance of the success criteria",
+                    "principle": "Principle of the success criteria",
+                    "url": "Url of the success criteria"
+                  }
+                ],
+                "related?": [], // related WCAG 2.1 techniques
+                "url?": "Url of the technique",
+                "passed": "Number of passed results",
+                "warning": "Number of warning results",
+                "failed": "Number ff failed results",
+                "type?": [], // usually "ACTRule" or "TestCase"
+                "a11yReq?": [], // WCAG 2.1 relation - something like "WCAG21:language"
+                "outcome": "Outcome of the technique",
+                "description": "Description of the outcome";
+              },
+              "results": [
+                {
+                  "verdict": "Outcome of the test",
+                  "description": "Description of the test",
+                  "resultCode": "Test identifier",
+                  "pointer?": "Element pointer in CSS notation",
+                  "htmlCode?": "Element html code",
+                  "attributes?": "Attributes of the element" // if available
+                },
+                { ... }
+              ]
+            },
+            "...": { ... }
+          }
+        },
+        "best-practices": {
+          "type": "best-practices",
+          "metadata": {
+            "passed": "number of passed best practices",
+            "warning": "number of warning best practices",
+            "failed": "number of failed best practices",
+            "inapplicable": "number of inapplicable best practices",
+          },
+          "assertions": {
+            "QW_BP1": {
+              "name": "Name of the technique",
+              "code": "QualWeb best practices id",
+              "description": "Description of the best practices",
+              "metadata": {
+                "target": "Any target, can be one element, multiple elements, attributes, a relation between elements",
+                "success-criteria?": [
+                  {
+                    "name": "Name of the success criteria",
+                    "level": "Level of conformance of the success criteria",
+                    "principle": "Principle of the success criteria",
+                    "url": "Url of the success criteria"
+                  }
+                ],
+                "related?": [], // related WCAG 2.1 techniques
+                "passed": "Number of passed results",
+                "warning": "Number of warning results",
+                "failed": "Number ff failed results",
+                "type?": [], // usually "ACTRule" or "TestCase"
+                "a11yReq?": [], // WCAG 2.1 relation - something like "WCAG21:language"
+                "outcome": "Outcome of the best practices",
+                "description": "Description of the outcome";
+              },
+              "results": [
+                {
+                  "verdict": "Outcome of the test",
+                  "description": "Description of the test",
+                  "resultCode": "Test identifier",
+                  "pointer?": "Element pointer in CSS notation",
+                  "htmlCode?": "Element html code",
+                  "attributes?": "Attributes of the element" // if available
+                },
+                { ... }
+              ]
+            },
+            "...": { ... }
+          }
+        },
+        "counter": {
+          "type": "counter",
+          "data": {
+            "roles": {
+              "button": 2,
+              "link": 4,
+              ...
+            },
+            "tags": {
+              "div": 10,
+              "table": 3,
+              ...
+            }
+          }
+        }
+      }
+    }
+  ]
+}
 ```
 
 ## Implemented ACT Rules
