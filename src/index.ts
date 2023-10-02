@@ -3,7 +3,7 @@ import puppeteer from 'puppeteer-extra';
 import { Cluster } from 'puppeteer-cluster';
 import StealthPlugin from 'puppeteer-extra-plugin-stealth';
 import AdBlocker from 'puppeteer-extra-plugin-adblocker';
-import { QualwebOptions, Evaluations, PuppeteerPlugins, ClusterOptions, LoadEvent, QualwebPlugin } from '@qualweb/core';
+import { QualwebOptions, Evaluations, PuppeteerPlugins, ClusterOptions, LoadEvent, QualwebPlugin, State } from '@qualweb/core';
 import { generateEARLReport } from '@qualweb/earl-reporter';
 import { Dom } from '@qualweb/dom';
 import { Evaluation } from '@qualweb/evaluation';
@@ -12,6 +12,9 @@ import locales, { Lang, Locale, TranslationObject } from '@qualweb/locale';
 import { readFile, writeFile, unlink } from 'fs';
 import path from 'path';
 import 'colors';
+
+
+const qualstate = require("qualstate");
 
 /**
  * QualWeb engine - Performs web accessibility evaluations using several modules:
@@ -114,7 +117,7 @@ class QualWeb {
       modulesToExecute.counter = !!options.execute.counter;
     }
 
-    const evaluations: Evaluations = {};
+    let evaluations: Evaluations = {};
 
     let foundError = false;
 
@@ -132,7 +135,7 @@ class QualWeb {
       handleError(options, data.url, err.message + '\n-----------', timestamp);
     });
 
-    await this.cluster?.task(async ({ page, data: { url, html } }) => {
+    await this.cluster?.task(async ({ page, data: { url, html, stateData } }) => {
       const dom = new Dom(page, options.validator);
 
       // Execute beforePageLoad on all plugins in order. If any exceptions
@@ -145,7 +148,6 @@ class QualWeb {
       }
 
       const { sourceHtml, validation } = await dom.process(options, url ?? '', html ?? '');
-      const evaluation = new Evaluation(url, page, modulesToExecute);
 
       // Execute afterPageLoad on all plugins in order. Same assumptions for
       // exceptions apply as they did for beforePageLoad.
@@ -155,19 +157,55 @@ class QualWeb {
         }
       }
 
-      const evaluationReport = await evaluation.evaluatePage(sourceHtml, options, validation);
-      evaluations[url || 'customHtml'] = evaluationReport.getFinalReport();
+      const evaluation = new Evaluation(url, page, modulesToExecute);
+      const evaluationReport = stateData != null ?
+        await evaluation.evaluatePage(sourceHtml, options, validation, stateData.selector) :
+        await evaluation.evaluatePage(sourceHtml, options, validation);
+
+      if (stateData != null) {
+        stateData.arrStates.push(evaluationReport.getFinalReport());
+      } else {
+        evaluations[url || 'customHtml'] = evaluationReport.getFinalReport();
+      }
     });
 
-    for (const url of urls) {
-      this.cluster?.queue({ url });
-    }
+    let statesArr: State[] = [];
 
-    if (options.html) {
-      this.cluster?.queue({ html: options.html });
+    if (options.qualstate != null) {
+      try {
+        options.qualstate["url"] = urls[0];
+        let states = await qualstate.crawl(options.qualstate, puppeteer); // try
+        for (const state of states) {
+          let stateData = {
+            selector: state._selector,
+            arrStates: statesArr
+          }
+          console.log("States Size: "+ states.size);
+          this.cluster?.queue({ html: state._body, stateData: stateData });
+        }
+      } catch (error) {
+        throw new Error('Error: ' + error);
+      }
+    } else {
+      for (const url of urls) {
+        this.cluster?.queue({ url });
+      }
+
+      if (options.html) {
+        this.cluster?.queue({ html: options.html });
+      }
     }
 
     await this.cluster?.idle();
+
+    if (options.qualstate != null) {
+      const browser = await puppeteer.launch();
+      const page = await browser.newPage();
+      const evaluationQS = new Evaluation(urls[0], page, modulesToExecute);
+      const evaluationReport = await evaluationQS.evaluatePage('', options, undefined, undefined, true);
+      evaluations[urls[0]] = evaluationReport.getFinalReportQS();
+      evaluations[urls[0]]["states"] = statesArr as [State];
+    }
 
     if (options.log?.file) {
       if (foundError) {
