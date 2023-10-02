@@ -1,10 +1,16 @@
 # Changelog
 
-## [0.7.43] - 28/09/2023
+## [0.7.45] - 28/09/2023
 
 ### Updated
 
-- add qualstate 
+- add qualstate
+
+## [0.7.44] - 28/09/2023
+
+### Updated
+
+- dependencies
 
 ## [0.7.43] - 27/09/2023
 
