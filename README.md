@@ -1,4 +1,4 @@
-# QualWeb core
+# QualWeb core(updated version our new monorepo https://github.com/qualweb/qualweb)
 
 The core allows you to perform automatic accessibility evaluations on web pages. It contains 3 evaluation modules:
 
